@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TasteTrove</title>
+    <link rel="website icon" type="png" href="./Logo2.png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      body {
+        background-color: #fff;
+      }
+
+      .header {
+        background-color: #e7d3bb;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        width: 100%;
+        height: 120px;
+      }
+
+.name-tagline {
+    display: flex;
+    flex-direction: column;
+}
+
+      .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo-img {
+        width: 90px;
+        height: 90px;
+      }
+
+      .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+
+      .logo-text {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 2.5rem;
+        color: #000;
+        line-height: 1.2;
+      }
+
+      .recipe-container {
+        display: flex;
+        padding: 20px;
+        gap: 20px;
+        align-items: flex-start;
+      }
+
+      .image-section {
+        flex: 1;
+        border-radius: 15px;
+      }
+
+      .recipe-title {
+        font-size: 34px;
+        font-weight: bold;
+        color: #333;
+        padding: 0 5px;
+      }
+
+      .recipe-image {
+        width: 84%;
+        display: block;
+        border-radius: 45px;
+        padding: 20px;
+        margin-left: 30px;
+      }
+
+      .content-section {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .tab-input {
+        display: none;
+      }
+
+      .tabs {
+        display: flex;
+        gap: 20px;
+        margin-bottom: 20px;
+        border-bottom: 2px solid #ddd;
+      }
+
+      .tab-label {
+        padding: 10px 20px;
+        cursor: pointer;
+        font-size: 1.1rem;
+        color: #333;
+        position: relative;
+      }
+
+      .tab-content {
+        display: none;
+        padding: 20px;
+        background-color: #fff5f7;
+        border-radius: 10px;
+        min-height: 300px;
+        max-height: 500px; /* Added to limit height */
+        overflow-y: auto; /* Added to enable vertical scrolling */
+        scrollbar-width: thin; /* Firefox scrollbar styling */
+        scrollbar-color: #888 #f1f1f1; /* Firefox scrollbar color */
+      }
+
+      /* Webkit (Chrome, Safari, newer versions of Opera) scrollbar styling */
+      .tab-content::-webkit-scrollbar {
+        width: 10px;
+      }
+
+      .tab-content::-webkit-scrollbar-track {
+        background: #f1f1f1;
+        border-radius: 10px;
+      }
+
+      .tab-content::-webkit-scrollbar-thumb {
+        background: #888;
+        border-radius: 10px;
+      }
+
+      .tab-content::-webkit-scrollbar-thumb:hover {
+        background: #555;
+      }
+
+      .tab-content h2 {
+        margin-bottom: 20px;
+        color: #333;
+      }
+
+      .tab-content ul,
+      .tab-content ol {
+        padding-left: 20px;
+        list-style-position: outside;
+      }
+
+      .tab-content li {
+        margin-bottom: 15px;
+        line-height: 1.5;
+      }
+
+      #tab1:checked ~ .tabs .tab-label[for="tab1"],
+      #tab2:checked ~ .tabs .tab-label[for="tab2"] {
+        border-bottom: 2px solid #000;
+        margin-bottom: -2px;
+      }
+
+      #tab1:checked ~ #content1,
+      #tab2:checked ~ #content2 {
+        display: block;
+      }
+
+      @media (max-width: 768px) {
+        .recipe-container {
+          flex-direction: column;
+        }
+
+        .logo-text {
+          font-size: 1.8rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo-container">
+          <img src="./Logo2.png" alt="Chef Hat Logo" class="logo-img">
+          <div class="name-tagline">
+          <h1 class="logo-text" style="font-family: 'Times New Roman', Times, serif; font-size: xx-large;">TasteTrove</h1><h3>Find It,Cook It,Love It..</h3>
+      </div>
+      </div>
+      <!-- <img src="./Profile.jpg" alt="Profile" class="profile-img"> -->
+  </header>
+
+    <div class="recipe-container">
+      <div class="image-section">
+        <h2 class="recipe-title">
+          <a href="./index.html" class="back-arrow"><svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+          </svg></a>
+          Egg Dum Biryani
+        </h2>
+        <img src="./Recipes/R8.jpg" alt="Recipe" class="recipe-image" />
+      </div>
+
+      <div class="content-section">
+        <input type="radio" name="tabs" id="tab1" class="tab-input" checked />
+        <input type="radio" name="tabs" id="tab2" class="tab-input" />
+
+        <div class="tabs">
+          <label for="tab1" class="tab-label">Ingredients</label>
+          <label for="tab2" class="tab-label">Recipe</label>
+        </div>
+
+        <div id="content1" class="tab-content">
+          <h2>Ingredients</h2>
+          <ul>
+            <li><strong>For Masala</strong>
+                <ul>
+                    <li>1/4 cup Green Coriander</li>
+                    <li>1/4 cup Mint</li>
+                    <li>1/4 cup Fried Onions pieces</li>
+                    <li>4 - 5 Boiled Eggs</li>
+                    <li>1 Inch Cinnamon</li>
+                    <li>5 Cloves</li>
+                    <li>4 Cardamoms</li>
+                    <li>1 tsp Black Cumin</li>
+                    <li>1 - 2 Star Anise</li>
+                    <li>2 Biryani Leaves</li>
+                    <li>1 Black Cardamom</li>
+                    <li>Salt</li>
+                    <li>2 tsp Mirchi</li>
+                    <li>1 tbsp Coriander Powder</li>
+                    <li>1 tsp Roasted Cumin Powder</li>
+                    <li>3/4 tsp Garam Masala</li>
+                    <li>1 tbsp Ginger Garlic Paste</li>
+                    <li>4 Green Chillies Slit</li>
+                    <li>1/2 cup Curd</li>
+                    <li>1/4 cup Oil in which Onions were fried</li>
+                </ul>
+            </li>
+            <li><strong>To cook Biryani Rice</strong>
+                <ul>
+                    <li>2 liters Water</li>
+                    <li>2 Inches Cinnamon</li>
+                    <li>2 Star Anise</li>
+                    <li>6 - 7 Cloves</li>
+                    <li>6 Cardamoms</li>
+                    <li>2 Biryani Leaves</li>
+                    <li>1 tbsp Ginger Garlic Paste</li>
+                    <li>1 tbsp Black Cumin</li>
+                    <li>2 Black Cardamoms</li>
+                    <li>1/4 cup Dry Rose Petals</li>
+                    <li>4 Green Chillies Slit</li>
+                    <li>1.5 cup Basmati Rice (250 gm)</li>
+                    <li>1 Lemon</li>
+                    <li>2.5 tbsp Salt</li>
+                    <li>2 tbsp Mint chopped</li>
+                    <li>2 tbsp Green Coriander chopped</li>
+                </ul>
+            </li>
+            <li><strong>For Dum</strong>
+                <ul>
+                    <li>1/4 cup Ghee</li>
+                    <li>2 tbsp Mint chopped</li>
+                    <li>2 tsp Saffron Water</li>
+                    <li>1/4 tsp Garam Masala</li>
+                </ul>
+            </li>
+        </ul>
+        </div>
+
+        <div id="content2" class="tab-content">
+          <h2>Recipe Steps</h2>
+          <ol>
+            <li>Add all the ingredients for the Masala Mix and coat the Eggs carefully with them, without letting the Egg get smashed.</li>
+            <li>In the boiling water, add salt and spices and let it boil for 2-3 minutes.</li>
+            <li>Add Basmati Rice, Green Chillies, lemon juice, and Mint Green Coriander and cook to 90%.</li>
+            <li>Take the 90% cooked rice and strain it with all the spices and spread it on the spices.</li>
+            <li>On the Biryani Rice, add Ghee, Saffron Water, Garam Masala, chopped Mint, and seal it tight so that the Dum does not escape.</li>
+            <li>Let it cook on a medium flame for 8 minutes and leave it for 15 minutes. (Those who do not have Dry Rose Petals can sprinkle Rose Water.)</li>
+            <li>After 15 minutes, serve it with Mirchi ka Salan or some Curry or Raita.</li>
+        </ol>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
