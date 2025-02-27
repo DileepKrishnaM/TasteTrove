@@ -1,0 +1,178 @@
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+  }
+
+  body {
+    background-color: #fff;
+  }
+
+  .header {
+    background-color: #e7d3bb;
+    padding: 1rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    height: 120px;
+  }
+
+  .name-tagline {
+        display: flex;
+        flex-direction: column;
+    }
+
+  .logo-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+  }
+
+  .logo-img {
+    width: 90px;
+    height: 90px;
+  }
+
+  .profile-img {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+  }
+
+  .logo-text {
+    font-family: "Times New Roman", Times, serif;
+    font-size: 2.5rem;
+    color: #000;
+    line-height: 1.2;
+  }
+
+  .recipe-container {
+    display: flex;
+    padding: 20px;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .image-section {
+    flex: 1;
+    border-radius: 15px;
+  }
+
+  .recipe-title {
+    font-size: 34px;
+    font-weight: bold;
+    color: #333;
+    padding: 0 5px;
+  }
+
+  .recipe-image {
+    width: 76%;
+    display: block;
+    border-radius: 35px;
+    padding: 20px;
+    margin-left: 30px;
+  }
+
+  .content-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tab-input {
+    display: none;
+  }
+
+  .tabs {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #ddd;
+  }
+
+  .tab-label {
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 1.1rem;
+    color: #333;
+    position: relative;
+  }
+
+  .tab-content {
+    display: none;
+    padding: 20px;
+    background-color: #fff5f7;
+    border-radius: 10px;
+    min-height: 300px;
+    max-height: 500px; /* Added to limit height */
+    overflow-y: auto; /* Added to enable vertical scrolling */
+    scrollbar-width: thin; /* Firefox scrollbar styling */
+    scrollbar-color: #888 #f1f1f1; /* Firefox scrollbar color */
+  }
+
+  /* Webkit (Chrome, Safari, newer versions of Opera) scrollbar styling */
+  .tab-content::-webkit-scrollbar {
+    width: 10px;
+  }
+
+  .tab-content::-webkit-scrollbar-track {
+    background: #f1f1f1;
+    border-radius: 10px;
+  }
+
+  .tab-content::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 10px;
+  }
+
+  .tab-content::-webkit-scrollbar-thumb:hover {
+    background: #555;
+  }
+
+  .tab-content h2 {
+    margin-bottom: 20px;
+    color: #333;
+    top: 0;
+    background-color: #fff5f7;
+    z-index: 1;
+  }
+
+  .tab-content h3 {
+    margin-top: 15px;
+    margin-bottom: 10px;
+    color: #555;
+  }
+
+  .tab-content ul,
+  .tab-content ol {
+    padding-left: 20px;
+    list-style-position: outside;
+  }
+
+  .tab-content li {
+    margin-bottom: 15px;
+    line-height: 1.5;
+  }
+
+  #tab1:checked ~ .tabs .tab-label[for="tab1"],
+  #tab2:checked ~ .tabs .tab-label[for="tab2"] {
+    border-bottom: 2px solid #000;
+    margin-bottom: -2px;
+  }
+
+  #tab1:checked ~ #content1,
+  #tab2:checked ~ #content2 {
+    display: block;
+  }
+
+  @media (max-width: 768px) {
+    .recipe-container {
+      flex-direction: column;
+    }
+
+    .logo-text {
+      font-size: 1.8rem;
+    }
+  }

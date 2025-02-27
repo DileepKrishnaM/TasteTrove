@@ -1,0 +1,19 @@
+Reference 1
+(2025, January 27). CookBook - The Recipe Manager & Planner App. https://cookbookmanager.com/
+
+
+
+Veg Manchuria
+Chicken Noodles
+Pav Bhaji
+Mushroom Curry
+Egg Fried Rice
+
+Chicken 3	Done
+Egg 3		Done
+Fish 2		Done
+Mutton 2	Done
+Paneer 2	Done
+Veg 3		Done
+Deserts 5	Done
+Breads 3(Optional)

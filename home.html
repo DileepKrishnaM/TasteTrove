@@ -1,0 +1,500 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TasteTrove</title>
+    <link rel="website icon" type="png" href="./Logo2.png" />
+    <style>
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: Arial, sans-serif;
+      }
+
+      .header {
+        background-color: #e7d3bb;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 1000;
+      }
+
+      .name-tagline {
+        display: flex;
+        flex-direction: column;
+      }
+
+      .logo-container {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+      }
+
+      .logo-img {
+        width: 90px;
+        height: 90px;
+      }
+
+      /* .profile-img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        } */
+
+      .logo-text {
+        font-family: "Times New Roman", Times, serif;
+        font-size: 2.5rem;
+        color: #000;
+        line-height: 1.2;
+      }
+
+      .search-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        padding: 0 1rem;
+        margin-top: 130px;
+      }
+
+      .search-bar {
+        width: 100%;
+        display: flex;
+        gap: 0.5rem;
+        background-color: #f0f0f0;
+        padding: 0.75rem;
+        border-radius: 25px;
+      }
+
+      .search-input {
+        flex: 1;
+        border: none;
+        background: none;
+        outline: none;
+        font-size: 1rem;
+      }
+
+      .add-button {
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-size: 1.5rem;
+      }
+
+      .view-button {
+        background-color: cornsilk;
+        cursor: pointer;
+        font-size: medium;
+        align-items: center;
+        align-self: flex-end;
+        padding: 5px;
+        transition: 0.3s ease;
+      }
+      .view-button:hover {
+        background-color: rgb(70, 139, 230);
+        color: beige;
+      }
+
+      .grid-container {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 2rem;
+        padding: 2rem;
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+
+      .recipe-card {
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        overflow: hidden;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        cursor: pointer;
+        height: 300px;
+        width: 275px;
+        display: flex;
+        flex-direction: column;
+      }
+
+      .recipe-image {
+        width: 100%;
+        height: 200px;
+        object-fit: cover;
+        background-color: #ddd;
+      }
+
+      .recipe-info {
+        padding: 1rem;
+        display: flex;
+      }
+
+      .recipe-title {
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+      }
+
+      .no-results {
+        text-align: center;
+        grid-column: 1 / -1;
+        padding: 2rem;
+        font-size: 1.2rem;
+        color: #666;
+        background-color: #f5f5f5;
+        border-radius: 10px;
+        margin: 1rem auto;
+        width: 100%;
+        max-width: 600px;
+      }
+
+      .filter-container {
+        max-width: 800px;
+        margin: 1rem auto;
+        padding: 0 1rem;
+        display: flex;
+        gap: 1rem;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+
+      .filter-button {
+        padding: 0.5rem 1rem;
+        border: 2px solid #e7d3bb;
+        background-color: white;
+        border-radius: 20px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+      }
+
+      .filter-button.active {
+        background-color: #e7d3bb;
+        color: black;
+      }
+
+      .filter-button:hover {
+        background-color: #e7d3bb;
+        color: black;
+      }
+
+      @media (max-width: 768px) {
+        .grid-container {
+          grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+          padding: 1rem;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo-container">
+        <img src="./Logo2.png" alt="Chef Hat Logo" class="logo-img" />
+        <div class="name-tagline">
+          <h1
+            class="logo-text"
+            style="
+              font-family: 'Times New Roman', Times, serif;
+              font-size: xx-large;
+            "
+          >
+            TasteTrove
+          </h1>
+          <h3>Find It,Cook It,Love It..</h3>
+        </div>
+      </div>
+      <!-- <img src="./Profile.jpg" alt="Profile" class="profile-img"> -->
+    </header>
+
+    <div class="search-container">
+      <div class="search-bar">
+        <input
+          type="text"
+          class="search-input"
+          placeholder="Find It..."
+          id="searchInput"
+          onkeyup="filterRecipes()"
+        />
+      </div>
+    </div>
+
+    <div class="filter-container">
+      <button class="filter-button active" data-category="all">All</button>
+      <button class="filter-button" data-category="veg">Vegetarian</button>
+      <button class="filter-button" data-category="non-veg">Non-Vegetarian</button>
+      <button class="filter-button" data-category="sweets">Sweets</button>
+    </div>
+
+    <div class="grid-container" id="recipeGrid">
+      <!-- Recipe cards remain the same -->
+      <!-- Recipe Card 1 -->
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R1.jpg" alt="Recipe 1" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Chicken Dum Biryani</h2>
+          <a href="./Recipe1.html">
+            <button class="view-button" style="margin-left: 40px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recipe Card 2 -->
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R2.jpg" alt="Recipe 2" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Chicken Curry</h2>
+          <a href="./Recipe2.html">
+            <button class="view-button" style="margin-left: 80px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recipe Card 3 -->
+      <div class="recipe-card" data-category="veg">
+        <img src="./Recipes/R3.jpg" alt="Recipe 3" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Paneer Butter Masala</h2>
+          <a href="./Recipe3.html">
+            <button class="view-button" style="margin-left: 40px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recipe Card 4 -->
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R4.jpg" alt="Recipe 4" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Chicken Fry</h2>
+          <a href="./Recipe4.html">
+            <button class="view-button" style="margin-left: 90px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recipe Card 5 -->
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R5.jpg" alt="Recipe 5" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Egg Curry</h2>
+          <a href="./Recipe5.html">
+            <button class="view-button" style="margin-left: 110px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recipe Card 6 -->
+      <div class="recipe-card" data-category="veg">
+        <img src="./Recipes/R6.jpg" alt="Recipe 6" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Sambar</h2>
+          <a href="./Recipe6.html">
+            <button class="view-button" style="margin-left: 130px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Recipe Card 7 -->
+      <div class="recipe-card" data-category="sweets">
+        <img src="./Recipes/R7.png" alt="Recipe 7" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Rusk Halwa</h2>
+          <a href="./Recipe7.html">
+            <button class="view-button" style="margin-left: 100px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R8.jpg" alt="Recipe 8" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Egg Dum Biryani</h2>
+          <a href="./Recipe8.html">
+            <button class="view-button" style="margin-left: 60px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R9.jpg" alt="Recipe 9" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Egg Fried Rice</h2>
+          <a href="./Recipe9.html">
+            <button class="view-button" style="margin-left: 70px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R10.jpg" alt="Recipe 10" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Mutton Dum Biryani</h2>
+          <a href="./Recipe10.html">
+            <button class="view-button" style="margin-left: 60px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R11.jpg" alt="Recipe 11" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Mutton Curry</h2>
+          <a href="./Recipe11.html">
+            <button class="view-button" style="margin-left: 80px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R12.jpg" alt="Recipe 12" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Fish Curry</h2>
+          <a href="./Recipe12.html">
+            <button class="view-button" style="margin-left: 100px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="non-veg">
+        <img src="./Recipes/R13.jpg" alt="Recipe 13" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Fish Fry</h2>
+          <a href="./Recipe13.html">
+            <button class="view-button" style="margin-left: 130px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="veg">
+        <img src="./Recipes/R14.jpg" alt="Recipe 14" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Paneer Pulao</h2>
+          <a href="./Recipe14.html">
+            <button class="view-button" style="margin-left: 85px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="veg">
+        <img src="./Recipes/R15.jpg" alt="Recipe 15" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Veg Khuska</h2>
+          <a href="./Recipe15.html">
+            <button class="view-button" style="margin-left: 90px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="veg">
+        <img src="./Recipes/R16.jpg" alt="Recipe 16" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Aloo Fry</h2>
+          <a href="./Recipe16.html">
+            <button class="view-button" style="margin-left: 120px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="sweets">
+        <img src="./Recipes/R17.jpg" alt="Recipe 17" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Palakova</h2>
+          <a href="./Recipe17.html">
+            <button class="view-button" style="margin-left: 120px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="sweets">
+        <img src="./Recipes/R18.jpg" alt="Recipe 18" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Kalakand</h2>
+          <a href="./Recipe18.html">
+            <button class="view-button" style="margin-left: 115px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="sweets">
+        <img src="./Recipes/R19.jpg" alt="Recipe 19" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Poornam</h2>
+          <a href="./Recipe19.html">
+            <button class="view-button" style="margin-left: 115px">View</button>
+          </a>
+        </div>
+      </div>
+
+      <div class="recipe-card" data-category="sweets">
+        <img src="./Recipes/R20.jpg" alt="Recipe 20" class="recipe-image" />
+        <div class="recipe-info">
+          <h2 class="recipe-title">Laddu</h2>
+          <a href="./Recipe20.html">
+            <button class="view-button" style="margin-left: 140px">View</button>
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      // Combined filtering function for both search and categories
+      function filterRecipes() {
+        const searchInput = document.getElementById("searchInput");
+        const searchFilter = searchInput.value.toLowerCase();
+        const grid = document.getElementById("recipeGrid");
+        const cards = grid.getElementsByClassName("recipe-card");
+        const activeCategory = document.querySelector('.filter-button.active').dataset.category;
+        let resultsFound = false;
+
+        // Remove existing no-results message
+        const existingNoResults = grid.querySelector(".no-results");
+        if (existingNoResults) {
+          existingNoResults.remove();
+        }
+
+        for (let card of cards) {
+          const title = card.getElementsByClassName("recipe-title")[0];
+          const category = card.dataset.category;
+          
+          const matchesSearch = title.textContent.toLowerCase().includes(searchFilter);
+          const matchesCategory = activeCategory === 'all' || category === activeCategory;
+          
+          card.style.display = matchesSearch && matchesCategory ? "" : "none";
+          if (matchesSearch && matchesCategory) resultsFound = true;
+        }
+
+        // Show no results message if no matches found
+        if (!resultsFound && (searchFilter !== "" || activeCategory !== 'all')) {
+          const noResults = document.createElement("div");
+          noResults.className = "no-results";
+          noResults.textContent = "No recipes found.";
+          grid.appendChild(noResults);
+        }
+      }
+
+      // Add click handlers for filter buttons
+      document.querySelectorAll('.filter-button').forEach(button => {
+        button.addEventListener('click', () => {
+          // Remove active class from all buttons
+          document.querySelectorAll('.filter-button').forEach(btn => {
+            btn.classList.remove('active');
+          });
+          
+          // Add active class to clicked button
+          button.classList.add('active');
+          
+          // Apply filters
+          filterRecipes();
+        });
+      });
+    </script>
+    <!-- <script>
+        var s = document.createElement("script");
+        s.src = "https://builder.corover.ai/params/widget/corovercb.lib.min.js?appId=feb2edd8-6662-482b-b045-1cf155e57872";
+        s.type = "text/javascript";
+        document.getElementsByTagName("body")[0].appendChild(s);
+        </script> -->
+  </body>
+</html>
