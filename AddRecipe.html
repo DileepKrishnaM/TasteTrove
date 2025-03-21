@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Add Recipe - TasteTrove</title>
+  <link rel="website icon" type="png" href="./Logo2.png">
+  <link rel="stylesheet" href="style.css">
+  <script type="module" src="app.js"></script>
+  <style>
+    .form-container {
+      max-width: 800px;
+      margin: 120px auto 40px;
+      padding: 20px;
+      background-color: #f5f5f5;
+      border-radius: 10px;
+    }
+    
+    .form-title {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    
+    .form-group {
+      margin-bottom: 15px;
+    }
+    
+    label {
+      display: block;
+      font-weight: bold;
+      margin-bottom: 5px;
+    }
+    
+    input, select, textarea {
+      width: 100%;
+      padding: 8px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 16px;
+    }
+    
+    .ingredient-section, .step-section {
+      background-color: #e7d3bb;
+      padding: 10px;
+      margin-bottom: 10px;
+      border-radius: 5px;
+    }
+    
+    .ingredient-list, .step-list {
+      margin-bottom: 10px;
+    }
+    
+    .ingredient-item, .step-item {
+      display: flex;
+      margin-bottom: 5px;
+    }
+    
+    .remove-btn {
+      background-color: #ff6b6b;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      margin-left: 10px;
+      cursor: pointer;
+    }
+    
+    .add-btn {
+      background-color: #4ecdc4;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      padding: 8px 12px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+    
+    .section-controls {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 10px;
+    }
+    
+    .submit-btn {
+      background-color: #e7d3bb;
+      color: black;
+      border: none;
+      border-radius: 4px;
+      padding: 12px 24px;
+      font-size: 18px;
+      cursor: pointer;
+      display: block;
+      margin: 20px auto 0;
+      transition: background-color 0.3s;
+    }
+    
+    .submit-btn:hover {
+      background-color: #d4b99a;
+    }
+    
+    .hint {
+      font-size: 14px;
+      color: #666;
+      margin-top: 2px;
+    }
+  </style>
+</head>
+<body>
+  <header class="header">
+    <div class="logo-container">
+      <img src="./Logo2.png" alt="Chef Hat Logo" class="logo-img">
+      <div class="name-tagline">
+        <h1 class="logo-text" style="font-family: 'Times New Roman', Times, serif; font-size: xx-large;">TasteTrove</h1>
+        <h3>Find It, Cook It, Love It..</h3>
+      </div>
+    </div>
+    <div id="auth-container"></div>
+  </header>
+
+  <div class="form-container">
+    <h2 class="form-title">Add New Recipe</h2>
+    <form id="recipe-form">
+      <!-- Basic Info -->
+      <div class="form-group">
+        <label for="recipe-name">Recipe Name*</label>
+        <input type="text" id="recipe-name" required>
+      </div>
+      
+      <div class="form-group">
+        <label for="recipe-category">Category*</label>
+        <select id="recipe-category" required>
+          <option value="">Select a category</option>
+          <option value="veg">Vegetarian</option>
+          <option value="non-veg">Non-Vegetarian</option>
+          <option value="sweets">Sweets</option>
+        </select>
+      </div>
+      
+      <div class="form-group">
+        <label for="recipe-image">Image URL</label>
+        <input type="text" id="recipe-image" placeholder="https://example.com/image.jpg">
+        <p class="hint">Leave blank to use a placeholder image</p>
+      </div>
+      
+      <div class="form-group">
+        <label for="prep-time">Preparation Time</label>
+        <input type="text" id="prep-time" placeholder="e.g. 30 minutes">
+      </div>
+      
+      <div class="form-group">
+        <label for="cook-time">Cooking Time</label>
+        <input type="text" id="cook-time" placeholder="e.g. 45 minutes">
+      </div>
+      
+      <div class="form-group">
+        <label for="servings">Servings</label>
+        <input type="number" id="servings" min="1" placeholder="4">
+      </div>
+      
+      <!-- Ingredients -->
+      <h3>Ingredients*</h3>
+      <div id="ingredients-container">
+        <!-- Ingredient sections will be added here -->
+        <div class="ingredient-section" id="ingredient-section-1">
+          <div class="form-group">
+            <label for="section-title-1">Section Title</label>
+            <input type="text" id="section-title-1" placeholder="Main Ingredients (optional)">
+          </div>
+          
+          <div class="ingredient-list" id="ingredient-list-1">
+            <div class="ingredient-item">
+              <input type="text" class="ingredient-input" placeholder="Ingredient with quantity">
+              <button type="button" class="remove-btn">Remove</button>
+            </div>
+          </div>
+          
+          <div class="section-controls">
+            <button type="button" class="add-btn" data-section="1">Add Ingredient</button>
+            <button type="button" class="remove-btn" id="remove-section-1">Remove Section</button>
+          </div>
+        </div>
+      </div>
+      
+      <button type="button" id="add-section" class="add-btn">Add Ingredient Section</button>
+      
+      <!-- Steps -->
+      <h3>Recipe Steps*</h3>
+      <div id="steps-container">
+        <div class="step-list">
+          <div class="step-item">
+            <input type="text" class="step-input" placeholder="Step 1">
+            <button type="button" class="remove-btn">Remove</button>
+          </div>
+        </div>
+        
+        <button type="button" id="add-step" class="add-btn">Add Step</button>
+      </div>
+      
+      <button type="submit" class="submit-btn">Add Recipe</button>
+    </form>
+  </div>
+
+  <script type="module">
+    import { addRecipe, getCurrentUser } from './firebase.js';
+    
+    document.addEventListener('DOMContentLoaded', async function() {
+      // Check if user is logged in
+      const user = await getCurrentUser();
+      if (!user) {
+        alert('You need to log in to add a recipe');
+        window.location.href = 'login.html';
+        return;
+      }
+      
+      // Set up form event listeners
+      setupForm();
+    });
+    
+    function setupForm() {
+      // Add ingredient
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('add-btn') && e.target.dataset.section) {
+          const sectionId = e.target.dataset.section;
+          addIngredient(sectionId);
+        }
+      });
+      
+      // Remove ingredient or step
+      document.addEventListener('click', function(e) {
+        if (e.target.classList.contains('remove-btn')) {
+          const parent = e.target.parentElement;
+          if (parent.classList.contains('ingredient-item') || parent.classList.contains('step-item')) {
+            parent.remove();
+          }
+        }
+      });
+      
+      // Remove section
+      document.addEventListener('click', function(e) {
+        if (e.target.id.startsWith('remove-section-')) {
+          const sectionId = e.target.id.replace('remove-section-', '');
+          const section = document.getElementById(`ingredient-section-${sectionId}`);
+          
+          // Don't remove the last section
+          const sections = document.querySelectorAll('.ingredient-section');
+          if (sections.length > 1) {
+            section.remove();
+          } else {
+            alert('You need at least one ingredients section');
+          }
+        }
+      });
+      
+      // Add step
+      document.getElementById('add-step').addEventListener('click', function() {
+        addStep();
+      });
+      
+      // Add ingredient section
+      document.getElementById('add-section').addEventListener('click', function() {
+        addIngredientSection();
+      });
+      
+      // Form submission
+      document.getElementById('recipe-form').addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        try {
+          const recipeData = collectFormData();
+          
+          if (!recipeData.name) {
+            alert('Recipe name is required');
+            return;
+          }
+          
+          if (!recipeData.category) {
+            alert('Category is required');
+            return;
+          }
+          
+          if (recipeData.ingredients.length === 0) {
+            alert('At least one ingredient is required');
+            return;
+          }
+          
+          if (recipeData.steps.length === 0) {
+            alert('At least one step is required');
+            return;
+          }
+          
+          // Add user ID and timestamp
+          const user = await getCurrentUser();
+          recipeData.userId = user.uid;
+          recipeData.createdAt = new Date().toISOString();
+          
+          // Submit to Firebase
+          const submitBtn = document.querySelector('.submit-btn');
+          submitBtn.textContent = 'Adding Recipe...';
+          submitBtn.disabled = true;
+          
+          const result = await addRecipe(recipeData);
+          
+          if (result.success) {
+            alert('Recipe added successfully!');
+            window.location.href = `recipe-detail.html?id=${result.id}`;
+          } else {
+            throw new Error(result.error);
+          }
+        } catch (error) {
+          console.error('Error adding recipe:', error);
+          alert(`Failed to add recipe: ${error.message}`);
+          
+          // Reset button
+          const submitBtn = document.querySelector('.submit-btn');
+          submitBtn.textContent = 'Add Recipe';
+          submitBtn.disabled = false;
+        }
+      });
+    }
+    
+    function addIngredient(sectionId) {
+      const list = document.getElementById(`ingredient-list-${sectionId}`);
+      const item = document.createElement('div');
+      item.className = 'ingredient-item';
+      item.innerHTML = `
+        <input type="text" class="ingredient-input" placeholder="Ingredient with quantity">
+        <button type="button" class="remove-btn">Remove</button>
+      `;
+      list.appendChild(item);
+    }
+    
+    function addStep() {
+      const list = document.querySelector('.step-list');
+      const items = list.querySelectorAll('.step-item');
+      const item = document.createElement('div');
+      item.className = 'step-item';
+      item.innerHTML = `
+        <input type="text" class="step-input" placeholder="Step ${items.length + 1}">
+        <button type="button" class="remove-btn">Remove</button>
+      `;
+      list.appendChild(item);
+    }
+    
+    function addIngredientSection() {
+      const container = document.getElementById('ingredients-container');
+      const sections = container.querySelectorAll('.ingredient-section');
+      const newSectionId = sections.length + 1;
+      
+      const section = document.createElement('div');
+      section.className = 'ingredient-section';
+      section.id = `ingredient-section-${newSectionId}`;
+      section.innerHTML = `
+        <div class="form-group">
+          <label for="section-title-${newSectionId}">Section Title</label>
+          <input type="text" id="section-title-${newSectionId}" placeholder="Section Title (optional)">
+        </div>
+        
+        <div class="ingredient-list" id="ingredient-list-${newSectionId}">
+          <div class="ingredient-item">
+            <input type="text" class="ingredient-input" placeholder="Ingredient with quantity">
+            <button type="button" class="remove-btn">Remove</button>
+          </div>
+        </div>
+        
+        <div class="section-controls">
+          <button type="button" class="add-btn" data-section="${newSectionId}">Add Ingredient</button>
+          <button type="button" class="remove-btn" id="remove-section-${newSectionId}">Remove Section</button>
+        </div>
+      `;
+      
+      container.appendChild(section);
+    }
+    
+    function collectFormData() {
+      const recipe = {
+        name: document.getElementById('recipe-name').value.trim(),
+        category: document.getElementById('recipe-category').value,
+        imageUrl: document.getElementById('recipe-image').value.trim(),
+        prepTime: document.getElementById('prep-time').value.trim(),
+        cookTime: document.getElementById('cook-time').value.trim(),
+        servings: parseInt(document.getElementById('servings').value) || 0,
+        ingredients: [],
+        steps: []
+      };
+      
+      // Collect ingredients
+      const sections = document.querySelectorAll('.ingredient-section');
+      sections.forEach(section => {
+        const sectionId = section.id.replace('ingredient-section-', '');
+        const sectionTitle = document.getElementById(`section-title-${sectionId}`).value.trim();
+        const ingredientInputs = section.querySelectorAll('.ingredient-input');
+        
+        const items = [];
+        ingredientInputs.forEach(input => {
+          const value = input.value.trim();
+          if (value) {
+            items.push(value);
+          }
+        });
+        
+        if (items.length > 0) {
+          recipe.ingredients.push({
+            section: sectionTitle || 'Ingredients',
+            items: items
+          });
+        }
+      });
+      
+      // Collect steps
+      const stepInputs = document.querySelectorAll('.step-input');
+      stepInputs.forEach(input => {
+        const value = input.value.trim();
+        if (value) {
+          recipe.steps.push(value);
+        }
+      });
+      
+      return recipe;
+    }
+  </script>
+  
+  <footer class="footer">
+    <p>&copy; 2025 TasteTrove. All rights reserved.</p>
+  </footer>
+</body>
+</html>

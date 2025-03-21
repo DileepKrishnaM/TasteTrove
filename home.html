@@ -43,11 +43,65 @@
         border-radius: 50%;
       }
 
-      /* .profile-img {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-        } */
+      .profile-img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+      }
+
+      .profile-container {
+  position: relative;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.username-display {
+  font-weight: bold;
+  font-size: 1rem;
+}
+
+      .profile-dropdown {
+        position: absolute;
+        right: 0;
+        top: 45px;
+        width: 150px;
+        background-color: white;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 8px;
+        padding: 0.5rem 0;
+        display: none;
+        z-index: 1001;
+      }
+
+      .dropdown-username {
+        padding: 0.5rem 1rem;
+        font-weight: bold;
+        text-align: center;
+        word-wrap: break-word;
+        max-width: 100%;
+      }
+
+      .dropdown-divider {
+        height: 1px;
+        background-color: #e7e7e7;
+        margin: 0.25rem 0;
+      }
+
+      .dropdown-item {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+        text-align: center;
+      }
+
+      .dropdown-item:hover {
+        background-color: #f5f5f5;
+      }
+
+      .profile-dropdown.show {
+        display: block;
+      }
 
       .logo-text {
         font-family: "Times New Roman", Times, serif;
@@ -207,7 +261,22 @@
           <h3>Find It,Cook It,Love It..</h3>
         </div>
       </div>
-      <!-- <img src="./Profile.jpg" alt="Profile" class="profile-img"> -->
+      <div class="profile-container">
+        <div class="username-display" id="headerUsername">User</div>
+        <img
+          src="./Profile.jpg"
+          alt="Profile"
+          class="profile-img"
+          id="profileImg"
+        />
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="dropdown-username" id="username">Loading...</div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" id="resetPasswordBtn">Reset Password</div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" id="signoutBtn">Sign Out</div>
+        </div>
+      </div>
     </header>
 
     <div class="search-container">
@@ -225,7 +294,9 @@
     <div class="filter-container">
       <button class="filter-button active" data-category="all">All</button>
       <button class="filter-button" data-category="veg">Vegetarian</button>
-      <button class="filter-button" data-category="non-veg">Non-Vegetarian</button>
+      <button class="filter-button" data-category="non-veg">
+        Non-Vegetarian
+      </button>
       <button class="filter-button" data-category="sweets">Sweets</button>
     </div>
 
@@ -446,7 +517,8 @@
         const searchFilter = searchInput.value.toLowerCase();
         const grid = document.getElementById("recipeGrid");
         const cards = grid.getElementsByClassName("recipe-card");
-        const activeCategory = document.querySelector('.filter-button.active').dataset.category;
+        const activeCategory = document.querySelector(".filter-button.active")
+          .dataset.category;
         let resultsFound = false;
 
         // Remove existing no-results message
@@ -458,16 +530,22 @@
         for (let card of cards) {
           const title = card.getElementsByClassName("recipe-title")[0];
           const category = card.dataset.category;
-          
-          const matchesSearch = title.textContent.toLowerCase().includes(searchFilter);
-          const matchesCategory = activeCategory === 'all' || category === activeCategory;
-          
+
+          const matchesSearch = title.textContent
+            .toLowerCase()
+            .includes(searchFilter);
+          const matchesCategory =
+            activeCategory === "all" || category === activeCategory;
+
           card.style.display = matchesSearch && matchesCategory ? "" : "none";
           if (matchesSearch && matchesCategory) resultsFound = true;
         }
 
         // Show no results message if no matches found
-        if (!resultsFound && (searchFilter !== "" || activeCategory !== 'all')) {
+        if (
+          !resultsFound &&
+          (searchFilter !== "" || activeCategory !== "all")
+        ) {
           const noResults = document.createElement("div");
           noResults.className = "no-results";
           noResults.textContent = "No recipes found.";
@@ -476,26 +554,123 @@
       }
 
       // Add click handlers for filter buttons
-      document.querySelectorAll('.filter-button').forEach(button => {
-        button.addEventListener('click', () => {
+      document.querySelectorAll(".filter-button").forEach((button) => {
+        button.addEventListener("click", () => {
           // Remove active class from all buttons
-          document.querySelectorAll('.filter-button').forEach(btn => {
-            btn.classList.remove('active');
+          document.querySelectorAll(".filter-button").forEach((btn) => {
+            btn.classList.remove("active");
           });
-          
+
           // Add active class to clicked button
-          button.classList.add('active');
-          
+          button.classList.add("active");
+
           // Apply filters
           filterRecipes();
         });
       });
     </script>
-    <!-- <script>
-        var s = document.createElement("script");
-        s.src = "https://builder.corover.ai/params/widget/corovercb.lib.min.js?appId=feb2edd8-6662-482b-b045-1cf155e57872";
-        s.type = "text/javascript";
-        document.getElementsByTagName("body")[0].appendChild(s);
-        </script> -->
+
+<script type="module">
+  // Import Firebase functions
+  import { getCurrentUser, getUserInfo, logoutUser } from "./firebase.js";
+  import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+  
+  // DOM elements
+  const profileImg = document.getElementById('profileImg');
+  const profileDropdown = document.getElementById('profileDropdown');
+  const usernameElement = document.getElementById('username');
+  const headerUsernameElement = document.getElementById('headerUsername');
+  const signoutBtn = document.getElementById('signoutBtn');
+  const resetPasswordBtn = document.getElementById('resetPasswordBtn');
+  const auth = getAuth();
+
+  loadUserInfo();
+  
+  // Toggle dropdown when profile image is clicked
+  profileImg.addEventListener('click', function(e) {
+    e.stopPropagation();
+    profileDropdown.classList.toggle('show');
+    
+    // Get and display current user info if dropdown is shown
+    if (profileDropdown.classList.contains('show')) {
+      loadUserInfo();
+    }
+  });
+  
+  // Close dropdown when clicking elsewhere on the page
+  window.addEventListener('click', function() {
+    if (profileDropdown.classList.contains('show')) {
+      profileDropdown.classList.remove('show');
+    }
+  });
+  
+  // Prevent dropdown from closing when clicked inside
+  profileDropdown.addEventListener('click', function(e) {
+    e.stopPropagation();
+  });
+  
+  // Handle sign out
+  signoutBtn.addEventListener('click', async function() {
+    const result = await logoutUser();
+    if (result.success) {
+      // Redirect to login page after successful logout
+      window.location.href = './login.html';
+    } else {
+      alert('Failed to sign out: ' + result.error);
+    }
+  });
+  
+  // Handle reset password
+  resetPasswordBtn.addEventListener('click', async function() {
+    try {
+      const user = await getCurrentUser();
+      if (user && user.email) {
+        await sendPasswordResetEmail(auth, user.email);
+        alert('Password reset email sent! Check your inbox.');
+        profileDropdown.classList.remove('show');
+      } else {
+        alert('You need to be logged in to reset your password.');
+      }
+    } catch (error) {
+      alert('Error sending password reset email: ' + error.message);
+    }
+  });
+  
+  // Load user information
+  async function loadUserInfo() {
+    try {
+      // Get current authenticated user
+      const user = await getCurrentUser();
+      
+      if (user) {
+        // Get user info from Firestore
+        const userInfo = await getUserInfo(user.uid);
+        
+        if (userInfo.success) {
+          // Display username in both places
+          usernameElement.textContent = userInfo.data.username;
+          headerUsernameElement.textContent = userInfo.data.username;
+        } else {
+          usernameElement.textContent = 'User';
+          headerUsernameElement.textContent = 'User';
+          console.error('Failed to get user info:', userInfo.error);
+        }
+      } else {
+        // User not logged in, redirect to login page
+        usernameElement.textContent = "Guest";
+        headerUsernameElement.textContent = "Guest";
+      }
+    } catch (error) {
+      console.error('Error loading user info:', error);
+      usernameElement.textContent = 'Error';
+      headerUsernameElement.textContent = 'Error';
+    }
+  }
+  
+  // Check authentication status and load username when page loads
+  document.addEventListener('DOMContentLoaded', async function() {
+    loadUserInfo();
+  });
+</script>
   </body>
 </html>
