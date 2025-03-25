@@ -22,7 +22,7 @@ import {
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyAFof5rBA7f3emBwqboDIc7yfKxSP5Wd8Q",
+  apiKey: "firebase_api_key",
   authDomain: "tastetrove-3c59e.firebaseapp.com",
   projectId: "tastetrove-3c59e",
   storageBucket: "tastetrove-3c59e.firebasestorage.app",
