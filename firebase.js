@@ -22,12 +22,12 @@ import {
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "firebase_api_key",
-  authDomain: "auth_Domain",
-  projectId: "project_Id",
-  storageBucket: "storage_Bucket",
-  messagingSenderId: "msg_Sender_Id",
-  appId: "app_Id"
+  apiKey: "FIREBASE_API_KEY",
+  authDomain: "AUTH_DOMAIN",
+  projectId: "PROJECT_ID",
+  storageBucket: "STORAGE_BUCKET",
+  messagingSenderId: "MSG_SENDER_ID",
+  appId: "APP_ID"
 };
 
 // Initialize Firebase
