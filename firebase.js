@@ -23,11 +23,11 @@ import {
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "firebase_api_key",
-  authDomain: "tastetrove-3c59e.firebaseapp.com",
-  projectId: "tastetrove-3c59e",
-  storageBucket: "tastetrove-3c59e.firebasestorage.app",
-  messagingSenderId: "707396441293",
-  appId: "1:707396441293:web:8010b2072a532a18f24584"
+  authDomain: "auth_Domain",
+  projectId: "project_Id",
+  storageBucket: "storage_Bucket",
+  messagingSenderId: "msg_Sender_Id",
+  appId: "app_Id"
 };
 
 // Initialize Firebase
