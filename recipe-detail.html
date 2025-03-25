@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>TasteTrove - Recipe</title>
+    <link rel="website icon" type="png" href="./Logo2.png" />
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <header class="header">
+      <div class="logo-container">
+        <img src="./Logo2.png" alt="Chef Hat Logo" class="logo-img" />
+        <div class="name-tagline">
+          <h1
+            class="logo-text"
+            style="
+              font-family: 'Times New Roman', Times, serif;
+              font-size: xx-large;
+            "
+          >
+            TasteTrove
+          </h1>
+          <h3>Find It,Cook It,Love It..</h3>
+        </div>
+      </div>
+      <div class="profile-container">
+        <div class="username-display" id="headerUsername">User</div>
+        <img
+          src="./Profile.jpg"
+          alt="Profile"
+          class="profile-img"
+          id="profileImg"
+        />
+        <div class="profile-dropdown" id="profileDropdown">
+          <div class="dropdown-username" id="username">Loading...</div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" id="resetPasswordBtn">Reset Password</div>
+          <div class="dropdown-divider"></div>
+          <div class="dropdown-item" id="signoutBtn">Sign Out</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="recipe-container" id="recipe-container">
+      <div class="loading">Loading recipe...</div>
+    </div>
+
+    <script type="module">
+      import { getRecipeById } from "./firebase.js";
+
+      async function loadRecipeDetails() {
+        // Get recipe ID from URL query parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const recipeId = urlParams.get("id");
+
+        if (!recipeId) {
+          showError("Recipe ID not found");
+          return;
+        }
+
+        try {
+          const result = await getRecipeById(recipeId);
+
+          if (result.success) {
+            displayRecipe(result.data);
+          } else {
+            showError(result.error);
+          }
+        } catch (error) {
+          console.error("Error loading recipe:", error);
+          showError("Failed to load recipe. Please try again later.");
+        }
+      }
+
+      function displayRecipe(recipe) {
+        console.log("Recipe data:", recipe); // Log the recipe data
+
+        const container = document.getElementById("recipe-container");
+
+        container.innerHTML = `
+    <div class="image-section">
+      <h2 class="recipe-title">
+        <a href="./home.html" class="back-btn">
+          <svg xmlns="http://www.w3.org/2000/svg" width="25" height="25" fill="currentColor" class="bi bi-arrow-left-circle" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M1 8a7 7 0 1 0 14 0A7 7 0 0 0 1 8m15 0A8 8 0 1 1 0 8a8 8 0 0 1 16 0m-4.5-.5a.5.5 0 0 1 0 1H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5z"/>
+          </svg>
+        </a>
+        ${recipe.name}
+      </h2>
+      <img src="${recipe.imageUrl || "./Recipes/placeholder.jpg"}" alt="${
+          recipe.name
+        }" class="recipe-image" />
+    </div>
+
+    <div class="content-section">
+      <input type="radio" name="tabs" id="tab1" class="tab-input" checked />
+      <input type="radio" name="tabs" id="tab2" class="tab-input" />
+      <input type="radio" name="tabs" id="tab3" class="tab-input" />
+
+      <div class="tabs">
+        <label for="tab1" class="tab-label">Ingredients</label>
+        <label for="tab2" class="tab-label">Recipe</label>
+        <label for="tab3" class="tab-label">Macros</label>
+      </div>
+
+      <div id="content1" class="tab-content">
+        <h2>Ingredients</h2>
+        <ul>
+          ${renderIngredients(recipe.ingredients)}
+        </ul>
+      </div>
+
+      <div id="content2" class="tab-content">
+        <h2>Recipe Steps</h2>
+        <ol>
+          ${renderSteps(recipe.steps)}
+        </ol>
+      </div>
+
+      <div id="content3" class="tab-content">
+        <h2>Nutritional Information</h2>
+        <ul id="macros-list">
+          ${renderMacros(recipe.macros)}
+        </ul>
+      </div>
+    </div>
+  `;
+
+        // Update document title
+        document.title = `TasteTrove - ${recipe.name}`;
+      }
+
+      // ----RENDER Ingredients---------
+      function renderIngredients(ingredients) {
+        console.log("Ingredients received:", ingredients); // Log the ingredients received
+
+        if (!ingredients || !Array.isArray(ingredients)) {
+          return "<li>No ingredients listed</li>";
+        }
+
+        return ingredients
+          .map((ingredient) => {
+            // Check if it's a section header (object with title and items)
+            if (
+              typeof ingredient === "object" &&
+              ingredient.section &&
+              ingredient.items
+            ) {
+              return `
+        <li><strong>${ingredient.section}</strong></li>
+        <ul>
+          ${ingredient.items.map((item) => `<li>${item}</li>`).join("")}
+        </ul>
+      `;
+            }
+            // Regular ingredient
+            return `<li>${ingredient}</li>`;
+          })
+          .join("");
+      }
+
+      // ----RENDER Steps---------
+      function renderSteps(steps) {
+        if (!steps || !Array.isArray(steps)) {
+          return "<li>No steps listed</li>";
+        }
+        console.log("Steps received:", steps);
+        return steps.map((step) => `<li>${step}</li>`).join("");
+      }
+
+      function renderMacros(macros) {
+        if (!macros || Object.keys(macros).length === 0) {
+          return "<li>No nutritional information available</li>";
+        }
+        console.log("Macros received:", macros);
+        return Object.entries(macros)
+          .map(([key, value]) => `<li>${key}: ${value}</li>`)
+          .join("");
+      }
+
+      function showError(message) {
+        const container = document.getElementById("recipe-container");
+        container.innerHTML = `
+        <div class="error-message">
+          <h2>Error</h2>
+          <p>${message}</p>
+          <a href="./home.html" class="back-btn">Back to Home</a>
+        </div>
+      `;
+      }
+
+      // Load recipe when page loads
+      document.addEventListener("DOMContentLoaded", loadRecipeDetails);
+    </script>
+
+    <!-- Profile Dropdown -->
+    <script type="module">
+      // Import Firebase functions
+      import { getCurrentUser, getUserInfo, logoutUser } from "./firebase.js";
+      import {
+        getAuth,
+        sendPasswordResetEmail,
+      } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+      // DOM elements
+      const profileImg = document.getElementById("profileImg");
+      const profileDropdown = document.getElementById("profileDropdown");
+      const usernameElement = document.getElementById("username");
+      const headerUsernameElement = document.getElementById("headerUsername");
+      const signoutBtn = document.getElementById("signoutBtn");
+      const resetPasswordBtn = document.getElementById("resetPasswordBtn");
+      const auth = getAuth();
+
+      loadUserInfo();
+
+      // Toggle dropdown when profile image is clicked
+      profileImg.addEventListener("click", function (e) {
+        e.stopPropagation();
+        profileDropdown.classList.toggle("show");
+
+        // Get and display current user info if dropdown is shown
+        if (profileDropdown.classList.contains("show")) {
+          loadUserInfo();
+        }
+      });
+
+      // Close dropdown when clicking elsewhere on the page
+      window.addEventListener("click", function () {
+        if (profileDropdown.classList.contains("show")) {
+          profileDropdown.classList.remove("show");
+        }
+      });
+
+      // Prevent dropdown from closing when clicked inside
+      profileDropdown.addEventListener("click", function (e) {
+        e.stopPropagation();
+      });
+
+      // Handle sign out
+      signoutBtn.addEventListener("click", async function () {
+        const result = await logoutUser();
+        if (result.success) {
+          // Redirect to login page after successful logout
+          window.location.href = "./login.html";
+        } else {
+          alert("Failed to sign out: " + result.error);
+        }
+      });
+
+      // Handle reset password
+      resetPasswordBtn.addEventListener("click", async function () {
+        try {
+          const user = await getCurrentUser();
+          if (user && user.email) {
+            await sendPasswordResetEmail(auth, user.email);
+            alert("Password reset email sent! Check your inbox.");
+            profileDropdown.classList.remove("show");
+          } else {
+            alert("You need to be logged in to reset your password.");
+          }
+        } catch (error) {
+          alert("Error sending password reset email: " + error.message);
+        }
+      });
+
+      // Load user information
+      async function loadUserInfo() {
+        try {
+          // Get current authenticated user
+          const user = await getCurrentUser();
+
+          if (user) {
+            // Get user info from Firestore
+            const userInfo = await getUserInfo(user.uid);
+
+            if (userInfo.success) {
+              // Display username in both places
+              usernameElement.textContent = userInfo.data.username;
+              headerUsernameElement.textContent = userInfo.data.username;
+            } else {
+              usernameElement.textContent = "User";
+              headerUsernameElement.textContent = "User";
+              console.error("Failed to get user info:", userInfo.error);
+            }
+          } else {
+            // User not logged in, redirect to login page
+            usernameElement.textContent = "Guest";
+            headerUsernameElement.textContent = "Guest";
+          }
+        } catch (error) {
+          console.error("Error loading user info:", error);
+          usernameElement.textContent = "Error";
+          headerUsernameElement.textContent = "Error";
+        }
+      }
+
+      // Check authentication status and load username when page loads
+      document.addEventListener("DOMContentLoaded", async function () {
+        loadUserInfo();
+      });
+    </script>
+  </body>
+</html>

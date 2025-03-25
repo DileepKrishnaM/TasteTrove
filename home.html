@@ -50,17 +50,17 @@
       }
 
       .profile-container {
-  position: relative;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-}
+        position: relative;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
 
-.username-display {
-  font-weight: bold;
-  font-size: 1rem;
-}
+      .username-display {
+        font-weight: bold;
+        font-size: 1rem;
+      }
 
       .profile-dropdown {
         position: absolute;
@@ -134,11 +134,22 @@
         font-size: 1rem;
       }
 
-      .add-button {
-        background: none;
+      /* Add this CSS for the "Add Recipe" button */
+      .add-recipe-button {
+        background: linear-gradient(135deg, #4ecdc4, #2ecc71);
+        color: white;
         border: none;
+        border-radius: 25px;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
         cursor: pointer;
-        font-size: 1.5rem;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-left: 10px;
+      }
+
+      .add-recipe-button:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
       }
 
       .view-button {
@@ -148,6 +159,7 @@
         align-items: center;
         align-self: flex-end;
         padding: 5px;
+        margin-left: 60px;
         transition: 0.3s ease;
       }
       .view-button:hover {
@@ -288,6 +300,10 @@
           id="searchInput"
           onkeyup="filterRecipes()"
         />
+        <!-- Add Recipe Button -->
+        <button id="addRecipeButton" class="add-recipe-button">
+          Add Recipe
+        </button>
       </div>
     </div>
 
@@ -300,218 +316,78 @@
       <button class="filter-button" data-category="sweets">Sweets</button>
     </div>
 
-    <div class="grid-container" id="recipeGrid">
-      <!-- Recipe cards remain the same -->
-      <!-- Recipe Card 1 -->
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R1.jpg" alt="Recipe 1" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Chicken Dum Biryani</h2>
-          <a href="./Recipe1.html">
-            <button class="view-button" style="margin-left: 40px">View</button>
-          </a>
-        </div>
-      </div>
+    <div class="grid-container" id="recipeGrid"></div>
 
-      <!-- Recipe Card 2 -->
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R2.jpg" alt="Recipe 2" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Chicken Curry</h2>
-          <a href="./Recipe2.html">
-            <button class="view-button" style="margin-left: 80px">View</button>
-          </a>
-        </div>
-      </div>
+    <!-- getAllRecipes()  -->
+    <script type="module">
+      import { getAllRecipes } from "./firebase.js";
 
-      <!-- Recipe Card 3 -->
-      <div class="recipe-card" data-category="veg">
-        <img src="./Recipes/R3.jpg" alt="Recipe 3" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Paneer Butter Masala</h2>
-          <a href="./Recipe3.html">
-            <button class="view-button" style="margin-left: 40px">View</button>
-          </a>
-        </div>
-      </div>
+      // Function to load recipes from Firebase
+      async function loadRecipes() {
+        const recipeGrid = document.getElementById("recipeGrid");
+        recipeGrid.innerHTML = ""; // Clear existing content
 
-      <!-- Recipe Card 4 -->
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R4.jpg" alt="Recipe 4" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Chicken Fry</h2>
-          <a href="./Recipe4.html">
-            <button class="view-button" style="margin-left: 90px">View</button>
-          </a>
-        </div>
-      </div>
+        // Show loading indicator
+        const loadingDiv = document.createElement("div");
+        loadingDiv.className = "loading";
+        loadingDiv.textContent = "Loading recipes...";
+        recipeGrid.appendChild(loadingDiv);
 
-      <!-- Recipe Card 5 -->
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R5.jpg" alt="Recipe 5" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Egg Curry</h2>
-          <a href="./Recipe5.html">
-            <button class="view-button" style="margin-left: 110px">View</button>
-          </a>
-        </div>
-      </div>
+        try {
+          const result = await getAllRecipes();
+          console.log("Recipes Fetched :", result);
 
-      <!-- Recipe Card 6 -->
-      <div class="recipe-card" data-category="veg">
-        <img src="./Recipes/R6.jpg" alt="Recipe 6" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Sambar</h2>
-          <a href="./Recipe6.html">
-            <button class="view-button" style="margin-left: 130px">View</button>
-          </a>
-        </div>
-      </div>
+          if (result.success) {
+            // Remove loading indicator
+            recipeGrid.removeChild(loadingDiv);
 
-      <!-- Recipe Card 7 -->
-      <div class="recipe-card" data-category="sweets">
-        <img src="./Recipes/R7.png" alt="Recipe 7" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Rusk Halwa</h2>
-          <a href="./Recipe7.html">
-            <button class="view-button" style="margin-left: 100px">View</button>
-          </a>
-        </div>
-      </div>
+            // Check if we have recipes
+            if (result.data.length === 0) {
+              const noRecipes = document.createElement("div");
+              noRecipes.className = "no-results";
+              noRecipes.textContent = "No recipes found.";
+              recipeGrid.appendChild(noRecipes);
+              return;
+            }
 
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R8.jpg" alt="Recipe 8" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Egg Dum Biryani</h2>
-          <a href="./Recipe8.html">
-            <button class="view-button" style="margin-left: 60px">View</button>
-          </a>
-        </div>
-      </div>
+            // Add recipe cards
+            result.data.forEach((recipe) => {
+              const card = document.createElement("div");
+              card.className = "recipe-card";
+              card.dataset.category = recipe.category || "uncategorized";
 
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R9.jpg" alt="Recipe 9" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Egg Fried Rice</h2>
-          <a href="./Recipe9.html">
-            <button class="view-button" style="margin-left: 70px">View</button>
-          </a>
-        </div>
-      </div>
+              card.innerHTML = `
+          <img src="${recipe.imageUrl || "./Recipes/placeholder.jpg"}" alt="${
+                recipe.name
+              }" class="recipe-image" />
+          <div class="recipe-info">
+            <h2 class="recipe-title">${recipe.name}</h2>
+            <a href="./recipe-detail.html?id=${recipe.id}">
+              <button class="view-button">View</button>
+            </a>
+          </div>
+        `;
 
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R10.jpg" alt="Recipe 10" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Mutton Dum Biryani</h2>
-          <a href="./Recipe10.html">
-            <button class="view-button" style="margin-left: 60px">View</button>
-          </a>
-        </div>
+              recipeGrid.appendChild(card);
+            });
+          } else {
+            throw new Error(result.error);
+          }
+        } catch (error) {
+          console.error("Error loading recipes:", error);
+          recipeGrid.innerHTML = `
+      <div class="no-results">
+        Error loading recipes. Please try again later.
       </div>
+    `;
+        }
+      }
 
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R11.jpg" alt="Recipe 11" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Mutton Curry</h2>
-          <a href="./Recipe11.html">
-            <button class="view-button" style="margin-left: 80px">View</button>
-          </a>
-        </div>
-      </div>
+      // Load recipes when page loads
+      document.addEventListener("DOMContentLoaded", loadRecipes);
 
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R12.jpg" alt="Recipe 12" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Fish Curry</h2>
-          <a href="./Recipe12.html">
-            <button class="view-button" style="margin-left: 100px">View</button>
-          </a>
-        </div>
-      </div>
-
-      <div class="recipe-card" data-category="non-veg">
-        <img src="./Recipes/R13.jpg" alt="Recipe 13" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Fish Fry</h2>
-          <a href="./Recipe13.html">
-            <button class="view-button" style="margin-left: 130px">View</button>
-          </a>
-        </div>
-      </div>
-
-      <div class="recipe-card" data-category="veg">
-        <img src="./Recipes/R14.jpg" alt="Recipe 14" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Paneer Pulao</h2>
-          <a href="./Recipe14.html">
-            <button class="view-button" style="margin-left: 85px">View</button>
-          </a>
-        </div>
-      </div>
-
-      <div class="recipe-card" data-category="veg">
-        <img src="./Recipes/R15.jpg" alt="Recipe 15" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Veg Khuska</h2>
-          <a href="./Recipe15.html">
-            <button class="view-button" style="margin-left: 90px">View</button>
-          </a>
-        </div>
-      </div>
-
-      <div class="recipe-card" data-category="veg">
-        <img src="./Recipes/R16.jpg" alt="Recipe 16" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Aloo Fry</h2>
-          <a href="./Recipe16.html">
-            <button class="view-button" style="margin-left: 120px">View</button>
-          </a>
-        </div>
-      </div>
-
-      <div class="recipe-card" data-category="sweets">
-        <img src="./Recipes/R17.jpg" alt="Recipe 17" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Palakova</h2>
-          <a href="./Recipe17.html">
-            <button class="view-button" style="margin-left: 120px">View</button>
-          </a>
-        </div>
-      </div>
-
-      <div class="recipe-card" data-category="sweets">
-        <img src="./Recipes/R18.jpg" alt="Recipe 18" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Kalakand</h2>
-          <a href="./Recipe18.html">
-            <button class="view-button" style="margin-left: 115px">View</button>
-          </a>
-        </div>
-      </div>
-
-      <div class="recipe-card" data-category="sweets">
-        <img src="./Recipes/R19.jpg" alt="Recipe 19" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Poornam</h2>
-          <a href="./Recipe19.html">
-            <button class="view-button" style="margin-left: 115px">View</button>
-          </a>
-        </div>
-      </div>
-
-      <div class="recipe-card" data-category="sweets">
-        <img src="./Recipes/R20.jpg" alt="Recipe 20" class="recipe-image" />
-        <div class="recipe-info">
-          <h2 class="recipe-title">Laddu</h2>
-          <a href="./Recipe20.html">
-            <button class="view-button" style="margin-left: 140px">View</button>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <script>
       // Combined filtering function for both search and categories
+      // -----------FILTER Functionality--------------
       function filterRecipes() {
         const searchInput = document.getElementById("searchInput");
         const searchFilter = searchInput.value.toLowerCase();
@@ -570,107 +446,131 @@
       });
     </script>
 
-<script type="module">
-  // Import Firebase functions
-  import { getCurrentUser, getUserInfo, logoutUser } from "./firebase.js";
-  import { getAuth, sendPasswordResetEmail } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
-  
-  // DOM elements
-  const profileImg = document.getElementById('profileImg');
-  const profileDropdown = document.getElementById('profileDropdown');
-  const usernameElement = document.getElementById('username');
-  const headerUsernameElement = document.getElementById('headerUsername');
-  const signoutBtn = document.getElementById('signoutBtn');
-  const resetPasswordBtn = document.getElementById('resetPasswordBtn');
-  const auth = getAuth();
+    <!-- For Add recipe functionality -->
+    <script type="module">
+      import { getCurrentUser } from "./firebase.js";
 
-  loadUserInfo();
-  
-  // Toggle dropdown when profile image is clicked
-  profileImg.addEventListener('click', function(e) {
-    e.stopPropagation();
-    profileDropdown.classList.toggle('show');
-    
-    // Get and display current user info if dropdown is shown
-    if (profileDropdown.classList.contains('show')) {
+      // Add event listener to the "Add Recipe" button
+      document
+        .getElementById("addRecipeButton")
+        .addEventListener("click", async () => {
+          const user = await getCurrentUser();
+          if (user) {
+            // If user is logged in, redirect to AddRecipe.html
+            window.location.href = "AddRecipe.html";
+          } else {
+            // If user is not logged in, redirect to login.html
+            alert("You need to log in to add a recipe.");
+            window.location.href = "login.html";
+          }
+        });
+    </script>
+
+    <!-- For Profile Details -->
+    <script type="module">
+      // Import Firebase functions
+      import { getCurrentUser, getUserInfo, logoutUser } from "./firebase.js";
+      import {
+        getAuth,
+        sendPasswordResetEmail,
+      } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
+
+      // DOM elements
+      const profileImg = document.getElementById("profileImg");
+      const profileDropdown = document.getElementById("profileDropdown");
+      const usernameElement = document.getElementById("username");
+      const headerUsernameElement = document.getElementById("headerUsername");
+      const signoutBtn = document.getElementById("signoutBtn");
+      const resetPasswordBtn = document.getElementById("resetPasswordBtn");
+      const auth = getAuth();
+
       loadUserInfo();
-    }
-  });
-  
-  // Close dropdown when clicking elsewhere on the page
-  window.addEventListener('click', function() {
-    if (profileDropdown.classList.contains('show')) {
-      profileDropdown.classList.remove('show');
-    }
-  });
-  
-  // Prevent dropdown from closing when clicked inside
-  profileDropdown.addEventListener('click', function(e) {
-    e.stopPropagation();
-  });
-  
-  // Handle sign out
-  signoutBtn.addEventListener('click', async function() {
-    const result = await logoutUser();
-    if (result.success) {
-      // Redirect to login page after successful logout
-      window.location.href = './login.html';
-    } else {
-      alert('Failed to sign out: ' + result.error);
-    }
-  });
-  
-  // Handle reset password
-  resetPasswordBtn.addEventListener('click', async function() {
-    try {
-      const user = await getCurrentUser();
-      if (user && user.email) {
-        await sendPasswordResetEmail(auth, user.email);
-        alert('Password reset email sent! Check your inbox.');
-        profileDropdown.classList.remove('show');
-      } else {
-        alert('You need to be logged in to reset your password.');
-      }
-    } catch (error) {
-      alert('Error sending password reset email: ' + error.message);
-    }
-  });
-  
-  // Load user information
-  async function loadUserInfo() {
-    try {
-      // Get current authenticated user
-      const user = await getCurrentUser();
-      
-      if (user) {
-        // Get user info from Firestore
-        const userInfo = await getUserInfo(user.uid);
-        
-        if (userInfo.success) {
-          // Display username in both places
-          usernameElement.textContent = userInfo.data.username;
-          headerUsernameElement.textContent = userInfo.data.username;
-        } else {
-          usernameElement.textContent = 'User';
-          headerUsernameElement.textContent = 'User';
-          console.error('Failed to get user info:', userInfo.error);
+
+      // Toggle dropdown when profile image is clicked
+      profileImg.addEventListener("click", function (e) {
+        e.stopPropagation();
+        profileDropdown.classList.toggle("show");
+
+        // Get and display current user info if dropdown is shown
+        if (profileDropdown.classList.contains("show")) {
+          loadUserInfo();
         }
-      } else {
-        // User not logged in, redirect to login page
-        usernameElement.textContent = "Guest";
-        headerUsernameElement.textContent = "Guest";
+      });
+
+      // Close dropdown when clicking elsewhere on the page
+      window.addEventListener("click", function () {
+        if (profileDropdown.classList.contains("show")) {
+          profileDropdown.classList.remove("show");
+        }
+      });
+
+      // Prevent dropdown from closing when clicked inside
+      profileDropdown.addEventListener("click", function (e) {
+        e.stopPropagation();
+      });
+
+      // Handle sign out
+      signoutBtn.addEventListener("click", async function () {
+        const result = await logoutUser();
+        if (result.success) {
+          // Redirect to login page after successful logout
+          window.location.href = "./login.html";
+        } else {
+          alert("Failed to sign out: " + result.error);
+        }
+      });
+
+      // Handle reset password
+      resetPasswordBtn.addEventListener("click", async function () {
+        try {
+          const user = await getCurrentUser();
+          if (user && user.email) {
+            await sendPasswordResetEmail(auth, user.email);
+            alert("Password reset email sent! Check your inbox.");
+            profileDropdown.classList.remove("show");
+          } else {
+            alert("You need to be logged in to reset your password.");
+          }
+        } catch (error) {
+          alert("Error sending password reset email: " + error.message);
+        }
+      });
+
+      // Load user information
+      async function loadUserInfo() {
+        try {
+          // Get current authenticated user
+          const user = await getCurrentUser();
+
+          if (user) {
+            // Get user info from Firestore
+            const userInfo = await getUserInfo(user.uid);
+
+            if (userInfo.success) {
+              // Display username in both places
+              usernameElement.textContent = userInfo.data.username;
+              headerUsernameElement.textContent = userInfo.data.username;
+            } else {
+              usernameElement.textContent = "User";
+              headerUsernameElement.textContent = "User";
+              console.error("Failed to get user info:", userInfo.error);
+            }
+          } else {
+            // User not logged in, redirect to login page
+            usernameElement.textContent = "Guest";
+            headerUsernameElement.textContent = "Guest";
+          }
+        } catch (error) {
+          console.error("Error loading user info:", error);
+          usernameElement.textContent = "Error";
+          headerUsernameElement.textContent = "Error";
+        }
       }
-    } catch (error) {
-      console.error('Error loading user info:', error);
-      usernameElement.textContent = 'Error';
-      headerUsernameElement.textContent = 'Error';
-    }
-  }
-  
-  // Check authentication status and load username when page loads
-  document.addEventListener('DOMContentLoaded', async function() {
-    loadUserInfo();
-  });
-</script>
+
+      // Check authentication status and load username when page loads
+      document.addEventListener("DOMContentLoaded", async function () {
+        loadUserInfo();
+      });
+    </script>
   </body>
 </html>
