@@ -74,7 +74,6 @@
           class="search-input"
           placeholder="Find It..."
           id="searchInput"
-          onkeyup="filterRecipes()"
         />
         <!-- Add Recipe Button -->
         <button id="addRecipeButton" class="add-recipe-button">
@@ -91,7 +90,7 @@
       </button>
       <button class="filter-button" data-category="sweets">Sweets</button>
     </div>
-    
+
     <div class="grid-container" id="recipeGrid"></div>
 
     <!-- getAllRecipes()  -->
@@ -205,6 +204,8 @@
         }
       }
 
+      // Add search input event listener
+      document.getElementById("searchInput").addEventListener("keyup", filterRecipes);
       // Add click handlers for filter buttons
       document.querySelectorAll(".filter-button").forEach((button) => {
         button.addEventListener("click", () => {
