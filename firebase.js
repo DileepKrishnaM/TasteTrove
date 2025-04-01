@@ -1,13 +1,11 @@
-// firebase.js - Firebase configuration and utility functions
-
-// Import the Firebase SDK
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
 import { 
   getAuth, 
   createUserWithEmailAndPassword, 
   signInWithEmailAndPassword, 
   onAuthStateChanged, 
-  signOut 
+  signOut,
+  sendEmailVerification
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 import { 
   getFirestore, 
@@ -39,11 +37,16 @@ const db = getFirestore(app);
 export const registerUser = async (email, password, username) => {
   try {
     const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+    
+    // Send verification email
+    await sendEmailVerification(userCredential.user);
+    
     // Add user info to Firestore
     await addDoc(collection(db, "users"), {
       uid: userCredential.user.uid,
       username: username,
       email: email,
+      emailVerified: false,
       createdAt: new Date().toISOString()
     });
     return { success: true, user: userCredential.user };
@@ -55,7 +58,28 @@ export const registerUser = async (email, password, username) => {
 export const loginUser = async (email, password) => {
   try {
     const userCredential = await signInWithEmailAndPassword(auth, email, password);
+    
+    // Check if email is verified
+    if (!userCredential.user.emailVerified) {
+      return { 
+        success: false, 
+        error: "Email not verified. Please check your inbox and verify your email.",
+        needsVerification: true,
+        user: userCredential.user
+      };
+    }
+    
     return { success: true, user: userCredential.user };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+// Function to resend verification email
+export const resendVerificationEmail = async (user) => {
+  try {
+    await sendEmailVerification(user);
+    return { success: true };
   } catch (error) {
     return { success: false, error: error.message };
   }
@@ -140,5 +164,6 @@ export default {
   getUserInfo,
   getAllRecipes,
   getRecipeById,
-  addRecipe
+  addRecipe,
+  resendVerificationEmail
 };

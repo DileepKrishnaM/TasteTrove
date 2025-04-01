@@ -119,11 +119,11 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
-        .login-form, .register-form {
+        .login-form, .register-form, .verification-info {
             display: none;
         }
         
-        .login-form.active, .register-form.active {
+        .login-form.active, .register-form.active, .verification-info.active {
             display: block;
         }
         
@@ -145,6 +145,41 @@
             background-color: #e8f5e9;
             color: #2e7d32;
             border: 1px solid #a5d6a7;
+        }
+        
+        .verification-info {
+            text-align: center;
+            padding: 1rem;
+            background-color: #e3f2fd;
+            border-radius: 5px;
+            border: 1px solid #90caf9;
+            margin-bottom: 1rem;
+        }
+        
+        .verification-title {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+            color: #1565c0;
+        }
+        
+        .verification-text {
+            margin-bottom: 0.5rem;
+        }
+        
+        .verification-email {
+            font-weight: bold;
+            margin-bottom: 0.5rem;
+        }
+        
+        .resend-btn {
+            background-color: #1565c0;
+            color: white;
+            border: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            margin-top: 0.5rem;
         }
         
         .back-link {
@@ -175,6 +210,14 @@
         
         <div class="alert alert-error" id="errorAlert"></div>
         <div class="alert alert-success" id="successAlert"></div>
+        
+        <div class="verification-info" id="verificationInfo">
+            <div class="verification-title">Email Verification Required</div>
+            <p class="verification-text">We've sent a verification link to:</p>
+            <p class="verification-email" id="verificationEmail"></p>
+            <p class="verification-text">Please check your inbox and click the link to verify your account.</p>
+            <button class="resend-btn" id="resendBtn">Resend Verification Email</button>
+        </div>
         
         <form class="login-form active" id="loginForm">
             <div class="form-group">
@@ -213,7 +256,7 @@
 
     <script type="module">
         // Import Firebase functions
-        import { registerUser, loginUser } from './firebase.js';
+        import { registerUser, loginUser, resendVerificationEmail } from './firebase.js';
         
         // DOM Elements
         const loginBtn = document.getElementById('loginBtn');
@@ -222,6 +265,12 @@
         const registerForm = document.getElementById('registerForm');
         const errorAlert = document.getElementById('errorAlert');
         const successAlert = document.getElementById('successAlert');
+        const verificationInfo = document.getElementById('verificationInfo');
+        const verificationEmail = document.getElementById('verificationEmail');
+        const resendBtn = document.getElementById('resendBtn');
+        
+        // Store current user for resending verification
+        let currentUser = null;
         
         // Toggle between login and register forms
         loginBtn.addEventListener('click', () => {
@@ -229,6 +278,7 @@
             registerBtn.classList.remove('active');
             loginForm.classList.add('active');
             registerForm.classList.remove('active');
+            verificationInfo.classList.remove('active');
             hideAlerts();
         });
         
@@ -237,6 +287,7 @@
             loginBtn.classList.remove('active');
             registerForm.classList.add('active');
             loginForm.classList.remove('active');
+            verificationInfo.classList.remove('active');
             hideAlerts();
         });
         
@@ -261,6 +312,12 @@
                     setTimeout(() => {
                         window.location.href = 'home.html';
                     }, 1000);
+                } else if (result.needsVerification) {
+                    // Show verification info and store user for resend functionality
+                    currentUser = result.user;
+                    verificationEmail.textContent = email;
+                    loginForm.classList.remove('active');
+                    verificationInfo.classList.add('active');
                 } else {
                     showError(result.error || 'Login failed. Please try again.');
                 }
@@ -298,15 +355,37 @@
             try {
                 const result = await registerUser(email, password, username);
                 if (result.success) {
-                    alert('Registration successful! You can now login.');
-                    // showSuccess('Registration successful! You can now login.');
-                    // Switch to login form after 1 second
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                        // loginBtn.click();
-                    }, 1000);
+                    // Store user for resend functionality
+                    currentUser = result.user;
+                    
+                    // Show verification info
+                    registerForm.classList.remove('active');
+                    verificationEmail.textContent = email;
+                    verificationInfo.classList.add('active');
+                    
+                    showSuccess('Registration successful! Please verify your email.');
                 } else {
                     showError(result.error || 'Registration failed. Please try again.');
+                }
+            } catch (error) {
+                showError('An error occurred. Please try again.');
+                console.error(error);
+            }
+        });
+        
+        // Resend verification email
+        resendBtn.addEventListener('click', async () => {
+            if (!currentUser) {
+                showError('No user found. Please try logging in again.');
+                return;
+            }
+            
+            try {
+                const result = await resendVerificationEmail(currentUser);
+                if (result.success) {
+                    showSuccess('Verification email resent successfully!');
+                } else {
+                    showError(result.error || 'Failed to resend email. Please try again.');
                 }
             } catch (error) {
                 showError('An error occurred. Please try again.');
