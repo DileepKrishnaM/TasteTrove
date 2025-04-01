@@ -209,6 +209,7 @@ body {
   overflow-y: auto; /* Added to enable vertical scrolling */
   scrollbar-width: thin; /* Firefox scrollbar styling */
   scrollbar-color: #888 #f1f1f1; /* Firefox scrollbar color */
+  color: #000000;
 }
 
 /* Webkit (Chrome, Safari, newer versions of Opera) scrollbar styling */
@@ -315,7 +316,7 @@ body.dark-mode {
 
 body.dark-mode .recipe-container {
   background-color: #1a1a1a;
-  height: 90vh;
+  height: 100vh;
 }
 
 body.dark-mode .tab-content {
