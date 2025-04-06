@@ -18,16 +18,18 @@ import {
   where 
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-firestore.js";
 
+import CONFIG from './config.js';
+
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: API_KEY,
-  authDomain: AUTH_DOMAIN,
-  projectId: PROJECT_ID,
-  storageBucket: STORAGE_BUCKET,
-  messagingSenderId: MESSAGING_SENDER_ID,
-  appId: APP_ID
+  apiKey: CONFIG.API_KEY,
+  authDomain: CONFIG.AUTH_DOMAIN,
+  projectId: CONFIG.PROJECT_ID,
+  storageBucket: CONFIG.STORAGE_BUCKET,
+  messagingSenderId: CONFIG.MESSAGING_SENDER_ID,
+  appId: CONFIG.APP_ID
 };
-
+console.log("Read :" ,CONFIG.API_KEY);
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
