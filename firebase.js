@@ -5,7 +5,8 @@ import {
   signInWithEmailAndPassword, 
   onAuthStateChanged, 
   signOut,
-  sendEmailVerification
+  sendEmailVerification,
+  sendPasswordResetEmail as firebaseSendPasswordResetEmail
 } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-auth.js";
 import { 
   getFirestore, 
@@ -81,6 +82,16 @@ export const loginUser = async (email, password) => {
 export const resendVerificationEmail = async (user) => {
   try {
     await sendEmailVerification(user);
+    return { success: true };
+  } catch (error) {
+    return { success: false, error: error.message };
+  }
+};
+
+// Function to send password reset email
+export const sendPasswordResetEmail = async (email) => {
+  try {
+    await firebaseSendPasswordResetEmail(auth, email);
     return { success: true };
   } catch (error) {
     return { success: false, error: error.message };
@@ -167,5 +178,6 @@ export default {
   getAllRecipes,
   getRecipeById,
   addRecipe,
-  resendVerificationEmail
+  resendVerificationEmail,
+  sendPasswordResetEmail
 };

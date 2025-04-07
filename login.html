@@ -119,11 +119,11 @@
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
         
-        .login-form, .register-form, .verification-info {
+        .login-form, .register-form, .verification-info, .forgot-password-form {
             display: none;
         }
         
-        .login-form.active, .register-form.active, .verification-info.active {
+        .login-form.active, .register-form.active, .verification-info.active, .forgot-password-form.active {
             display: block;
         }
         
@@ -193,6 +193,32 @@
         .back-link:hover {
             text-decoration: underline;
         }
+        
+        .forgot-password-link {
+            display: block;
+            text-align: center;
+            margin-top: 0.5rem;
+            color: #1565c0;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .forgot-password-link:hover {
+            text-decoration: underline;
+        }
+        
+        .back-to-login-link {
+            display: block;
+            text-align: center;
+            margin-top: 1rem;
+            color: #1565c0;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+        
+        .back-to-login-link:hover {
+            text-decoration: underline;
+        }
     </style>
 </head>
 <body>
@@ -229,6 +255,7 @@
                 <input type="password" id="loginPassword" required placeholder="Enter your password">
             </div>
             <button type="submit" class="form-btn">Login</button>
+            <a href="#" class="forgot-password-link" id="forgotPasswordLink">Forgot Password?</a>
         </form>
         
         <form class="register-form" id="registerForm">
@@ -251,18 +278,30 @@
             <button type="submit" class="form-btn">Register</button>
         </form>
         
+        <form class="forgot-password-form" id="forgotPasswordForm">
+            <div class="form-group">
+                <label for="resetEmail">Email</label>
+                <input type="email" id="resetEmail" required placeholder="Enter your email">
+            </div>
+            <button type="submit" class="form-btn">Reset Password</button>
+            <a href="#" class="back-to-login-link" id="backToLoginLink">Back to Login</a>
+        </form>
+        
         <a href="index.html" class="back-link">Back to Home</a>
     </div>
 
     <script type="module">
         // Import Firebase functions
-        import { registerUser, loginUser, resendVerificationEmail } from './firebase.js';
+        import { registerUser, loginUser, resendVerificationEmail, sendPasswordResetEmail } from './firebase.js';
         
         // DOM Elements
         const loginBtn = document.getElementById('loginBtn');
         const registerBtn = document.getElementById('registerBtn');
         const loginForm = document.getElementById('loginForm');
         const registerForm = document.getElementById('registerForm');
+        const forgotPasswordForm = document.getElementById('forgotPasswordForm');
+        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
+        const backToLoginLink = document.getElementById('backToLoginLink');
         const errorAlert = document.getElementById('errorAlert');
         const successAlert = document.getElementById('successAlert');
         const verificationInfo = document.getElementById('verificationInfo');
@@ -278,6 +317,7 @@
             registerBtn.classList.remove('active');
             loginForm.classList.add('active');
             registerForm.classList.remove('active');
+            forgotPasswordForm.classList.remove('active');
             verificationInfo.classList.remove('active');
             hideAlerts();
         });
@@ -287,7 +327,24 @@
             loginBtn.classList.remove('active');
             registerForm.classList.add('active');
             loginForm.classList.remove('active');
+            forgotPasswordForm.classList.remove('active');
             verificationInfo.classList.remove('active');
+            hideAlerts();
+        });
+        
+        // Show forgot password form
+        forgotPasswordLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            loginForm.classList.remove('active');
+            forgotPasswordForm.classList.add('active');
+            hideAlerts();
+        });
+        
+        // Back to login from forgot password form
+        backToLoginLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            forgotPasswordForm.classList.remove('active');
+            loginForm.classList.add('active');
             hideAlerts();
         });
         
@@ -366,6 +423,31 @@
                     showSuccess('Registration successful! Please verify your email.');
                 } else {
                     showError(result.error || 'Registration failed. Please try again.');
+                }
+            } catch (error) {
+                showError('An error occurred. Please try again.');
+                console.error(error);
+            }
+        });
+        
+        // Forgot password form submission
+        forgotPasswordForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            hideAlerts();
+            
+            const email = document.getElementById('resetEmail').value;
+            
+            if (!email) {
+                showError('Please enter your email address');
+                return;
+            }
+            
+            try {
+                const result = await sendPasswordResetEmail(email);
+                if (result.success) {
+                    showSuccess('Password reset email sent! Please check your inbox.');
+                } else {
+                    showError(result.error || 'Failed to send password reset email. Please try again.');
                 }
             } catch (error) {
                 showError('An error occurred. Please try again.');
