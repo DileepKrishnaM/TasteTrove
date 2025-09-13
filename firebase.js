@@ -30,7 +30,6 @@ const firebaseConfig = {
   messagingSenderId: CONFIG.MESSAGING_SENDER_ID,
   appId: CONFIG.APP_ID
 };
-console.log("Read :" ,CONFIG.API_KEY);
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
