@@ -5,6 +5,11 @@ TasteTrove is a web-based recipe discovery platform designed to help users find 
 The application focuses on simplicity, accessibility, and informed eating by providing recipes along with **nutritional insights** and an **interactive cooking experience**.
 
 ---
+## 🌐 Live Demo
+
+🚀 **Try TasteTrove here:**  
+👉 https://tastetrove-76-89-92.netlify.app/
+
 
 ## 🚀 Features
 
